@@ -6,8 +6,17 @@ require_once "vendor/autoload.php";
 $databasePath = __DIR__ . "/banco.sqlite";
 $pdo = new PDO("sqlite:$databasePath");
 
-$student = new Student(null, "Nickollas", new DateTimeImmutable("2006-07-29"));
+$student = new Student(
+    null,
+    "Lucas",
+    new DateTimeImmutable("2006-07-29")
+);
 
-$sqlInsert = "INSERT INTO students (name, birth_date) values ('{$student->name()}', '{$student->birthDate()->format('Y-m-d')}');";
+$sqlInsert = "INSERT INTO students (name, birth_date) values (:name, :birth_date);";
+$statement = $pdo->prepare($sqlInsert);
+$statement->bindValue(':name', $student->name());
+$statement->bindValue(':birth_date', $student->birthDate()->format('Y-m-d'));
 
-var_dump($pdo->exec($sqlInsert));
+if ($statement->execute()) {
+    echo "Foi ein";
+}
