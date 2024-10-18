@@ -8,10 +8,9 @@ use PDO;
 
 class PdoStudentRepository implements StudentRepository
 {
-
     private PDO $connection;
 
-    public function __construct($connection)
+    public function __construct(PDO $connection)
     {
         $this->connection = $connection;
     }
@@ -59,22 +58,24 @@ class PdoStudentRepository implements StudentRepository
         return $this->update($student);
     }
 
-    public function insert(Student $student): bool
+    private function insert(Student $student): bool
     {
-        $insertQuery = 'INSERT INTO students (name birth_date) VALUES (:name, :birth_date);';
+        $insertQuery = 'INSERT INTO students (name, birth_date) VALUES (:name, :birth_date);';
         $stmt = $this->connection->prepare($insertQuery);
 
         $success = $stmt->execute([
             ':name' => $student->name(),
-            ':birth_date' => $student->birthDate()->format(format: 'Y-m-d'),
+            ':birth_date' => $student->birthDate()->format('Y-m-d'),
         ]);
 
-        $student->defineId($this->connection->lastInsertId());
+        if ($success) {
+            $student->defineId($this->connection->lastInsertId());
+        }
 
         return $success;
     }
 
-    public function update(Student $student): bool
+    private function update(Student $student): bool
     {
         $updateQuery = 'UPDATE students SET name = :name, birth_date = :birth_date WHERE id = :id;';
         $stmt = $this->connection->prepare($updateQuery);

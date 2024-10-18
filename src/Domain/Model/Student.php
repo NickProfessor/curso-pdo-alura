@@ -41,7 +41,7 @@ class Student
 
     public function birthDate(): \DateTimeInterface
     {
-        return $this->birthDate();
+        return $this->birthDate;
     }
 
     public function age(): int
